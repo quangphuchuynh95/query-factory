@@ -227,7 +227,7 @@ class QueryFactory {
      * @param mixed $value
      */
     static function isAssoc($value) {
-        if (is_array($value) || array() === $value) {
+        if (!is_array($value) || array() === $value) {
             return false;
         }
         return array_keys($value) !== range(0, count($value) - 1);
