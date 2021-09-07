@@ -51,6 +51,18 @@ class QueryFactory {
     }
 
     /**
+     * @param              $pk
+     * @param string|array $fields
+     *
+     * @return string
+     */
+    public function selectByPk($pk, $fields = '*') {
+        return $this->select($fields, [
+            $this->pk => $pk
+        ]);
+    }
+
+    /**
      * @param array $where
      *
      * @throws QueryFactoryException
