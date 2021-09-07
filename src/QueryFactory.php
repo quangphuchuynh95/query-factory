@@ -81,11 +81,12 @@ class QueryFactory {
     /**
      * @param       $values
      * @param array $where
+     * @param bool  $return
      *
      * @return string
      * @throws QueryFactoryException
      */
-    public function update($values, array $where) {
+    public function update($values, array $where, $return = FALSE) {
         $query = "UPDATE {$this->table} SET ";
         $setClauses = [];
         foreach ($values as $key => $value) {
@@ -99,6 +100,9 @@ class QueryFactory {
             throw new QueryFactoryException('You are trying to update data without WHERE clause, please enable $unsafeUpdate if you want');
         } else {
             $query .= 'TRUE';
+        }
+        if ($return) {
+            $query .= 'RETURNING *';
         }
         return $query;
     }
@@ -118,11 +122,11 @@ class QueryFactory {
 
     /**
      * @param       $values
-     * @param array $where
+     * @param bool  $return
      *
      * @return string
      */
-    public function insert($values, array $where) {
+    public function insert($values, $return = FALSE) {
         $query = "INSERT INTO {$this->table} ";
         $keys = [];
         if (self::isAssoc($values)) {
@@ -145,6 +149,9 @@ class QueryFactory {
             $rows[] = '(' . implode(', ', $rowItems) . ')';
         }
         $query .= implode(', ', $rows);
+        if ($return) {
+            $query .= 'RETURNING *';
+        }
         return $query;
     }
 
