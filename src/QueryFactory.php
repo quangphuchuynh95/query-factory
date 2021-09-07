@@ -176,7 +176,7 @@ class QueryFactory {
     static function parseWhereClause(array $where, $operator = 'AND') {
         $items = [];
         foreach ($where as $key => $value) {
-            if ($key == 'and' | 'or' | 'AND' | 'OR') {
+            if (in_array($key, ['and', 'or', 'AND', 'OR'])) {
                 $items[] = self::parseWhereClause($value, $key);
                 continue;
             }
