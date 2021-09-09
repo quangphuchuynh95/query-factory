@@ -40,12 +40,12 @@ class QueryFactory {
             if (in_array($field, self::NONE_ESCAPE_FIELD_NAMES)) {
                 return $field;
             }
-            return self::escapeIdentifier($field);
+            return QueryFactoryHelper::escapeIdentifier($field);
         }, $fields);
         $query = "SELECT " . implode(',', $fields)
             . " FROM " . $this->table;
         if ($where) {
-            $query .= ' WHERE ' . self::parseWhereClause($where);
+            $query .= ' WHERE ' . QueryFactoryHelper::parseWhereClause($where);
         }
         return $query;
     }
@@ -70,7 +70,7 @@ class QueryFactory {
     public function delete($where = []) {
         $query = "DELETE FROM {$this->table} WHERE";
         if ($where) {
-            $query .= self::parseWhereClause($where);
+            $query .= QueryFactoryHelper::parseWhereClause($where);
         } else if (!$this->unsafeDelete) {
             throw new QueryFactoryException('You are trying to remove data without where clause, please enable $unsafeDelete if you want');
         } else {
@@ -85,7 +85,7 @@ class QueryFactory {
      * @return string
      */
     public function deleteByPk($id) {
-        return "DELETE FROM {$this->table} WHERE " . self::parseWhereClause([
+        return "DELETE FROM {$this->table} WHERE " . QueryFactoryHelper::parseWhereClause([
             $this->pk => $id,
         ]);
     }
@@ -102,12 +102,12 @@ class QueryFactory {
         $query = "UPDATE {$this->table} SET ";
         $setClauses = [];
         foreach ($values as $key => $value) {
-            $setClauses[] = self::escapeIdentifier($key) . ' = ' . self::escapeValue($value);
+            $setClauses[] = QueryFactoryHelper::escapeIdentifier($key) . ' = ' . QueryFactoryHelper::escapeValue($value);
         }
         $query .= implode(', ', $setClauses);
         $query .= ' WHERE ';
         if ($where) {
-            $query .= self::parseWhereClause($where);
+            $query .= QueryFactoryHelper::parseWhereClause($where);
         } else if (!$this->unsafeDelete) {
             throw new QueryFactoryException('You are trying to update data without WHERE clause, please enable $unsafeUpdate if you want');
         } else {
@@ -141,22 +141,22 @@ class QueryFactory {
     public function insert($values, $return = FALSE) {
         $query = "INSERT INTO {$this->table} ";
         $keys = [];
-        if (self::isAssoc($values)) {
+        if (QueryFactoryHelper::isAssoc($values)) {
             $keys = array_keys($values);
         } else {
             $keys = array_keys($values[0]);
         }
         $keys = array_map(function ($key) {
-            return self::escapeIdentifier($key);
+            return QueryFactoryHelper::escapeIdentifier($key);
         }, $keys);
         $query .= '(' . implode(',', $keys) . ') VALUES ';
-        if (self::isAssoc($values)) {
+        if (QueryFactoryHelper::isAssoc($values)) {
             $values = [$values];
         }
         $rows = [];
         foreach ($values as $rowValues) {
             $rowItems = array_map(function ($value) {
-                return self::escapeValue($value);
+                return QueryFactoryHelper::escapeValue($value);
             }, $rowValues);
             $rows[] = '(' . implode(', ', $rowItems) . ')';
         }
@@ -165,71 +165,5 @@ class QueryFactory {
             $query .= 'RETURNING *';
         }
         return $query;
-    }
-
-    /**
-     * @param array  $where
-     * @param string $operator AND | OR | and | or
-     *
-     * @return string
-     */
-    static function parseWhereClause(array $where, $operator = 'AND') {
-        $items = [];
-        foreach ($where as $key => $value) {
-            if (in_array($key, ['and', 'or', 'AND', 'OR'])) {
-                $items[] = self::parseWhereClause($value, $key);
-                continue;
-            }
-            preg_match('/^(.*?)(>|>=|<|<=|=|!=)?$/', $key, $matches);
-            $key = $matches[1];
-            $op = !empty($matches[2]) ? $matches[2] : '=';
-            if (is_array($value)) {
-                $items[] = self::escapeIdentifier($key) . " $op ANY(" . implode(',', $value) . ')';
-            } else {
-                $items[] = self::escapeIdentifier($key) . " $op " . self::escapeValue($value);
-            }
-        }
-        return '(' . implode(" $operator ", $items) . ')';
-    }
-
-    /**
-     * @param mixed  $value
-     * @param string $type string | integer | float | date | timestamp | timestamptz | 'json' | 'jsonb'
-     */
-    static function escapeValue($value, $type = 'string') {
-        if (self::isAssoc($value)) {
-            return "'" . json_encode($value) . "'::$type";
-        }
-        if (is_array($value)) {
-            $values = array_map(function ($value) use ($type) {
-                return self::escapeValue($value, $type);
-            }, $value);
-            return 'ARRAY[' . implode(', ', $values) . ']';
-        }
-        $value = (string) $value;
-        $value = str_replace("'", "''", $value);
-        $raw = "'$value'";
-        if ($type != 'string') {
-            $raw .= "::$type";
-        }
-        return $raw;
-    }
-
-    /**
-     * @param string $identifier
-     */
-    static function escapeIdentifier($identifier) {
-        $field = str_replace('"', '', $identifier);
-        return "\"$field\"";
-    }
-
-    /**
-     * @param mixed $value
-     */
-    static function isAssoc($value) {
-        if (!is_array($value) || array() === $value) {
-            return false;
-        }
-        return array_keys($value) !== range(0, count($value) - 1);
     }
 }

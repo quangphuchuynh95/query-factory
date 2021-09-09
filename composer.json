@@ -1,19 +1,22 @@
 {
-    "name": "quangphuc/query-factory",
-    "type": "library",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Quangphuc\\QueryFactory\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Huỳnh Quang Phúc",
-            "email": "quangphuc.huynh95@gmail.com"
-        }
+  "name": "quangphuc/query-factory",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "files": [
+      "src/QueryFactoryHelper.php"
     ],
-    "require": {
-      "ext-json": "*"
+    "psr-4": {
+      "Quangphuc\\QueryFactory\\": "src/"
     }
+  },
+  "authors": [
+    {
+      "name": "Huỳnh Quang Phúc",
+      "email": "quangphuc.huynh95@gmail.com"
+    }
+  ],
+  "require": {
+    "ext-json": "*"
+  }
 }
