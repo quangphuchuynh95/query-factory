@@ -183,7 +183,7 @@ class QueryFactory {
                 $items[] = QueryFactoryHelper::escapeValue($value, $columnTypes[$k]);
             }
             $stmt = '(';
-            $stmt .= implode(',', $columnTypes);
+            $stmt .= implode(',', $items);
             $stmt .= ')';
             $rows[] = $stmt;
         }
