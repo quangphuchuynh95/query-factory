@@ -65,12 +65,8 @@ class QueryFactoryHelper {
                 break;
             default:
                 $value = (string) $value;
-                while ($tag = self::randomTextTag()) {
-                    if (strpos($value, $tag) === false) {
-                        break;
-                    }
-                }
-                $raw = "\${$tag}\${$value}\${$tag}\$";
+                $value = str_replace("'", "''", $value);
+                $raw = "'{$value}'";
                 if ($type) {
                     $raw .= "::$type";
                 }
