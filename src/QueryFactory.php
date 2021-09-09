@@ -163,7 +163,7 @@ class QueryFactory {
         ], $return);
     }
 
-    public function batchUpdate(array $values, $return = FALSE) {
+    public function batchUpdate(array $values, array $columnTypes, $return = FALSE) {
         if (!$values || !is_array($values) || QueryFactoryHelper::isAssoc($values)) {
             return '';
         }
@@ -178,10 +178,12 @@ class QueryFactory {
         }
         $rows = [];
         foreach ($values as $row) {
+            $items = [];
+            foreach ($row as $k => $value) {
+                $items[] = QueryFactoryHelper::escapeValue($value, $columnTypes[$k]);
+            }
             $stmt = '(';
-            $stmt .= implode(',', array_map(function ($value) {
-                return QueryFactoryHelper::escapeValue($value);
-            }, $row));
+            $stmt .= implode(',', $columnTypes);
             $stmt .= ')';
             $rows[] = $stmt;
         }

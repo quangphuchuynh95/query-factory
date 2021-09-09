@@ -34,8 +34,6 @@ class QueryFactoryHelper {
     /**
      * @param mixed  $value
      * @param string $type text | integer | float | date | timestamp | timestamptz | 'json' | 'jsonb'
-     *
-     * @throws QueryFactoryException
      */
     static function escapeValue($value, $type = NULL) {
         if (is_null($value)) {
@@ -43,9 +41,6 @@ class QueryFactoryHelper {
         }
         if ($value instanceof ParamType) {
             return $value();
-        }
-        if ($type && !in_array($type, ['text', 'integer', 'float', 'date', 'timestamp', 'timestamptz', 'json', 'jsonb'])) {
-            throw new QueryFactoryException("$type is invalid");
         }
         if (is_array($value) && !self::isAssoc($value)) {
             $values = array_map(function ($value) use ($type) {
