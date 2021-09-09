@@ -140,7 +140,7 @@ class QueryFactory {
             $query .= 'TRUE';
         }
         if ($return) {
-            $query .= 'RETURNING *';
+            $query .= ' RETURNING *';
         }
         return $query;
     }
@@ -199,7 +199,7 @@ class QueryFactory {
             }, $keys));
         }
         if ($return) {
-            $query .= 'RETURNING *';
+            $query .= ' RETURNING *';
         }
         return $query;
     }
