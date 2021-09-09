@@ -29,10 +29,14 @@ class QueryFactory {
     }
 
     /**
-     * @param string|array $fields
-     * @param array $where
+     * @param string|array  $fields
+     * @param array         $where
+     * @param integer       $limit
+     * @param integer       $offset
+     *
+     * @throws QueryFactoryException
      */
-    public function select($fields = '*', $where = []) {
+    public function select($fields = '*', $where = [], $limit = 10000, $offset = 0) {
         if (!is_array($fields)) {
             $fields = [$fields];
         }
@@ -47,6 +51,12 @@ class QueryFactory {
         if ($where) {
             $query .= ' WHERE ' . QueryFactoryHelper::parseWhereClause($where);
         }
+        if ($limit) {
+            $query .= ' LIMIT ' . ((int) $limit);
+        }
+        if ($offset) {
+            $offset .= ' OFFSET $limit' . ((int) $offset);
+        }
         return $query;
     }
 
@@ -59,7 +69,7 @@ class QueryFactory {
     public function selectByPk($pk, $fields = '*') {
         return $this->select($fields, [
             $this->pk => $pk
-        ]);
+        ], 1);
     }
 
     /**
