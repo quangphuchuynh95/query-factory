@@ -70,7 +70,7 @@ class QueryFactoryHelper {
                         break;
                     }
                 }
-                $raw = "\${$tag}\${$value}\${$tag}\$}";
+                $raw = "\${$tag}\${$value}\${$tag}\$";
                 if ($type) {
                     $raw .= "::$type";
                 }
