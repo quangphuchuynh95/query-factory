@@ -28,6 +28,14 @@ class QueryFactory {
         }
     }
 
+    public function getTable() {
+        return $this->table;
+    }
+
+    public function getPk() {
+        return $this->pk;
+    }
+
     /**
      * @param string|array  $fields
      * @param array         $where
