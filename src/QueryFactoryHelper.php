@@ -38,6 +38,9 @@ class QueryFactoryHelper {
      * @throws QueryFactoryException
      */
     static function escapeValue($value, $type = 'text') {
+        if (is_null($value)) {
+            return 'NULL';
+        }
         if ($value instanceof ParamType) {
             return $value();
         }
