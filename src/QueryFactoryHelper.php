@@ -2,6 +2,8 @@
 
 namespace Quangphuc\QueryFactory;
 
+use Quangphuc\QueryFactory\ParamType\ParamType;
+
 class QueryFactoryHelper {
     /**
      * @param array  $where
@@ -36,6 +38,9 @@ class QueryFactoryHelper {
      * @throws QueryFactoryException
      */
     static function escapeValue($value, $type = 'text') {
+        if ($value instanceof ParamType) {
+            return $value();
+        }
         if (!in_array($type, ['text', 'integer', 'float', 'date', 'timestamp', 'timestamptz', 'json', 'jsonb'])) {
             throw new QueryFactoryException("$type is invalid");
         }
