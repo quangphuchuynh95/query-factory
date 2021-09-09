@@ -237,4 +237,8 @@ class QueryFactory {
         }
         return $query;
     }
+
+    public function getColumnsType(): string {
+        return "select \"column\", \"type\" from information_schema.columns WHERE table_name = $this->table";
+    }
 }
