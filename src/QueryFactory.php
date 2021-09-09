@@ -136,7 +136,7 @@ class QueryFactory {
      * @return string
      * @throws QueryFactoryException
      */
-    public function updateOne($id, $values) {
+    public function updateByPk($id, $values) {
         return $this->update($values, [
             $this->pk => $id,
         ]);
@@ -148,7 +148,7 @@ class QueryFactory {
      *
      * @return string
      */
-    public function insert($values, $return = FALSE) {
+    public function insert($values, $return = FALSE, $updateOnConflict = FALSE) {
         $query = "INSERT INTO {$this->table} ";
         $keys = [];
         if (QueryFactoryHelper::isAssoc($values)) {
@@ -171,6 +171,12 @@ class QueryFactory {
             $rows[] = '(' . implode(', ', $rowItems) . ')';
         }
         $query .= implode(', ', $rows);
+        if ($updateOnConflict) {
+            $query .= "ON CONFLICT ($this->pk) DO UPDATE SET ";
+            $query .= implode(', ', array_map(function ($key) {
+                return "$key = EXCLUDED.$key";
+            }, $keys));
+        }
         if ($return) {
             $query .= 'RETURNING *';
         }
