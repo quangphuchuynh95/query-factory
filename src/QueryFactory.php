@@ -179,10 +179,10 @@ class QueryFactory {
         $rows = [];
         foreach ($values as $row) {
             $stmt = '(';
-            $stmt = implode(',', array_map(function ($value) {
+            $stmt .= implode(',', array_map(function ($value) {
                 return QueryFactoryHelper::escapeValue($value);
             }, $row));
-            $stmt = ')';
+            $stmt .= ')';
             $rows[] = $stmt;
         }
         $query .= implode(', ', $setClauses);
