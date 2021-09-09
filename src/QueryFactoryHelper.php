@@ -64,7 +64,7 @@ class QueryFactoryHelper {
                 $raw = "'{$value}'";
         }
         if ($type) {
-            $raw = "CAST($raw AS $type)";
+            return "CAST($raw AS $type)";
         }
         return $raw;
     }

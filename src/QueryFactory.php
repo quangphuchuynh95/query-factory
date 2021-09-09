@@ -155,12 +155,12 @@ class QueryFactory {
      * @throws QueryFactoryException
      */
     public function updateByPk($pk, $values, $where = [], $return = FALSE) {
-        return $this->update($values, [
+        return $this->update($values, array_merge(
             $where,
             [
                 $this->pk => $pk
             ]
-        ], $return);
+        ), $return);
     }
 
     public function batchUpdate(array $values, array $columnTypes, $return = FALSE) {
