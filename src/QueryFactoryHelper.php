@@ -62,9 +62,9 @@ class QueryFactoryHelper {
                 $value = (string) $value;
                 $value = str_replace("'", "''", $value);
                 $raw = "'{$value}'";
-                if ($type) {
-                    $raw .= "CAST($raw AS $type)";
-                }
+        }
+        if ($type) {
+            $raw = "CAST($raw AS $type)";
         }
         return $raw;
     }
