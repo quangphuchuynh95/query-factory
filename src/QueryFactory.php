@@ -141,17 +141,18 @@ class QueryFactory {
      * @param       $pk
      * @param array $values
      * @param array $where
+     * @param bool  $return
      *
      * @return string
      * @throws QueryFactoryException
      */
-    public function updateByPk($pk, $values, $where = []) {
+    public function updateByPk($pk, $values, $where = [], $return = FALSE) {
         return $this->update($values, [
             $where,
             [
                 $this->pk => $pk
             ]
-        ]);
+        ], $return);
     }
 
     /**
