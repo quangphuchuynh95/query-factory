@@ -66,10 +66,13 @@ class QueryFactory {
      *
      * @return string
      */
-    public function selectByPk($pk, $fields = '*') {
-        return $this->select($fields, [
-            $this->pk => $pk
-        ], 1);
+    public function selectByPk($pk, $fields = '*', $where = []) {
+        return $this->select($fields, array_merge(
+            $where,
+            [
+                $this->pk => $pk
+            ]
+        ), 1);
     }
 
     /**
@@ -90,14 +93,19 @@ class QueryFactory {
     }
 
     /**
-     * @param $id
+     * @param       $pk
+     * @param array $where
      *
      * @return string
+     * @throws QueryFactoryException
      */
-    public function deleteByPk($id) {
-        return "DELETE FROM {$this->table} WHERE " . QueryFactoryHelper::parseWhereClause([
-            $this->pk => $id,
-        ]);
+    public function deleteByPk($pk, $where = []) {
+        return $this->delete(array_merge(
+            $where,
+            [
+                $this->pk => $pk
+            ]
+        ), 1);
     }
 
     /**
@@ -130,15 +138,19 @@ class QueryFactory {
     }
 
     /**
-     * @param       $id
+     * @param       $pk
      * @param array $values
+     * @param array $where
      *
      * @return string
      * @throws QueryFactoryException
      */
-    public function updateByPk($id, $values) {
+    public function updateByPk($pk, $values, $where = []) {
         return $this->update($values, [
-            $this->pk => $id,
+            $where,
+            [
+                $this->pk => $pk
+            ]
         ]);
     }
 
