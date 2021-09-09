@@ -23,7 +23,11 @@ class QueryFactoryHelper {
             $key = $matches[1];
             $op = !empty($matches[2]) ? $matches[2] : '=';
             if (is_array($value)) {
-                $items[] = self::escapeIdentifier($key) . " $op ANY(" . self::escapeValue($value) . ')';
+                $values = [];
+                foreach ($value as $item) {
+                    $values[] = self::escapeValue($item);
+                }
+                $items[] = self::escapeIdentifier($key) . " IN (" . implode(', ', $values) . ')';
             } else {
                 $items[] = self::escapeIdentifier($key) . " $op " . self::escapeValue($value);
             }
