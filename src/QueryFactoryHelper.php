@@ -37,14 +37,14 @@ class QueryFactoryHelper {
      *
      * @throws QueryFactoryException
      */
-    static function escapeValue($value, $type = 'text') {
+    static function escapeValue($value, $type = NULL) {
         if (is_null($value)) {
             return 'NULL';
         }
         if ($value instanceof ParamType) {
             return $value();
         }
-        if (!in_array($type, ['text', 'integer', 'float', 'date', 'timestamp', 'timestamptz', 'json', 'jsonb'])) {
+        if ($type && !in_array($type, ['text', 'integer', 'float', 'date', 'timestamp', 'timestamptz', 'json', 'jsonb'])) {
             throw new QueryFactoryException("$type is invalid");
         }
         if (is_array($value) && !self::isAssoc($value)) {
@@ -70,7 +70,10 @@ class QueryFactoryHelper {
                         break;
                     }
                 }
-                $raw = "\${$tag}\${$value}\${$tag}\$::{$type}";
+                $raw = "\${$tag}\${$value}\${$tag}\$}";
+                if ($type) {
+                    $raw .= "::$type";
+                }
         }
         return $raw;
     }
