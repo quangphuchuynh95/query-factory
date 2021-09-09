@@ -163,6 +163,40 @@ class QueryFactory {
         ], $return);
     }
 
+    public function batchUpdate(array $values, $return = FALSE) {
+        if (!$values || !is_array($values) || QueryFactoryHelper::isAssoc($values)) {
+            return '';
+        }
+        $query = "UPDATE {$this->table} SET ";
+        $setClauses = [];
+        $columns = [];
+        $keys = array_keys($values[0]);
+        foreach ($keys as &$key) {
+            $key = QueryFactoryHelper::escapeIdentifier($key);
+            $setClauses[] = "$key = tmp.$key";
+            $columns[] = $key;
+        }
+        $rows = [];
+        foreach ($values as $row) {
+            $stmt = '(';
+            $stmt = implode(',', array_map(function ($value) {
+                return QueryFactoryHelper::escapeValue($value);
+            }, $row));
+            $stmt = ')';
+            $rows[] = $stmt;
+        }
+        $query .= implode(', ', $setClauses);
+        $query .= ' FROM ( VALUES';
+        $query .= implode(',', $rows);
+        $query .= ' ) as tmp (';
+        $query .= implode(', ', $columns);
+        $query .= ") WHERE $this->table.$this->pk = tmp.$this->pk";
+        if ($return) {
+            $query .= ' RETURNING *';
+        }
+        return $query;
+    }
+
     /**
      * @param       $values
      * @param bool  $return
