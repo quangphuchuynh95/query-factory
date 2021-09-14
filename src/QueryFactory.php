@@ -172,7 +172,7 @@ class QueryFactory {
         foreach ($values as $index => $row) {
             $table = "\"_row_$index\"";
             $stmt = "$table AS (";
-            $stmt .= $this->updateByPk($row[$this->pk], $rows, [], TRUE);
+            $stmt .= $this->updateByPk($row[$this->pk], $row, [], TRUE);
             $stmt .= ')';
             $rows[] = $stmt;
             $selects[] = "SELECT * FROM $table";
