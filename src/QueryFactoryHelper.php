@@ -49,12 +49,13 @@ class QueryFactoryHelper {
         if (is_array($value) || is_object($value)) {
             $value = json_encode($value);
         }
-        $value = (string) $value;
         $value = str_replace("'", "''", $value);
-        if (is_bool($value)) {
+        if (is_null($value)) {
+            $raw = 'NULL';
+        } else if (is_bool($value)) {
             $raw = $value ? 'TRUE' : 'FALSE';
         } else if (is_numeric($value)) {
-            $raw = $value;
+            $raw = (string) $value;
         } else {
             $raw = "'{$value}'";
         }
