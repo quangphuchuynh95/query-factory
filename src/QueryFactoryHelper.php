@@ -40,16 +40,12 @@ class QueryFactoryHelper {
      * @param string $type text | integer | float | date | timestamp | timestamptz | 'json' | 'jsonb'
      */
     static function escapeValue($value, $type = NULL) {
-        if (is_null($value)) {
-            return 'NULL';
-        }
         if ($value instanceof ParamType) {
             return $value();
         }
         if (is_array($value) || is_object($value)) {
             $value = json_encode($value);
         }
-        $value = str_replace("'", "''", $value);
         if (is_null($value)) {
             $raw = 'NULL';
         } else if (is_bool($value)) {
@@ -57,6 +53,7 @@ class QueryFactoryHelper {
         } else if (is_numeric($value)) {
             $raw = (string) $value;
         } else {
+            $value = str_replace("'", "''", (string) $value);
             $raw = "'{$value}'";
         }
         if ($type) {
