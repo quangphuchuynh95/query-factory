@@ -163,39 +163,22 @@ class QueryFactory {
         ), $return);
     }
 
-    public function batchUpdate(array $values, array $columnTypes, $return = FALSE) {
+    public function batchUpdate(array $values, $return = FALSE) {
         if (!$values || !is_array($values) || QueryFactoryHelper::isAssoc($values)) {
             return '';
         }
-        $query = "UPDATE {$this->table} SET ";
-        $setClauses = [];
-        $columns = [];
-        $keys = array_keys($values[0]);
-        foreach ($keys as &$key) {
-            $key = QueryFactoryHelper::escapeIdentifier($key);
-            $setClauses[] = "$key = tmp.$key";
-            $columns[] = $key;
-        }
         $rows = [];
-        foreach ($values as $row) {
-            $items = [];
-            foreach ($row as $k => $value) {
-                $items[] = QueryFactoryHelper::escapeValue($value, $columnTypes[$k]);
-            }
-            $stmt = '(';
-            $stmt .= implode(',', $items);
+        $selects = [];
+        foreach ($values as $index => $row) {
+            $table = "\"_row_$index\"";
+            $stmt = "$table AS (";
+            $stmt .= $this->updateByPk($row[$this->pk], $rows, [], TRUE);
             $stmt .= ')';
             $rows[] = $stmt;
+            $selects[] = "SELECT * FROM $table";
         }
-        $query .= implode(', ', $setClauses);
-        $query .= ' FROM ( VALUES';
-        $query .= implode(',', $rows);
-        $query .= ' ) as tmp (';
-        $query .= implode(', ', $columns);
-        $query .= ") WHERE $this->table.$this->pk = tmp.$this->pk";
-        if ($return) {
-            $query .= ' RETURNING *';
-        }
+        $query = 'WITH ' . implode(',', $rows);
+        $query .= implode(' UNION ALL ', $selects);
         return $query;
     }
 
