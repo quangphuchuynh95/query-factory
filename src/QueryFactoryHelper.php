@@ -46,12 +46,6 @@ class QueryFactoryHelper {
         if ($value instanceof ParamType) {
             return $value();
         }
-        if (is_array($value) && !self::isAssoc($value) && !in_array($type, ['jsonb', 'json'])) {
-            $values = array_map(function ($value) use ($type) {
-                return self::escapeValue($value, $type);
-            }, $value);
-            return 'ARRAY[' . implode(', ', $values) . ']';
-        }
         if (is_array($value) || is_object($value)) {
             $value = json_encode($value);
         }
