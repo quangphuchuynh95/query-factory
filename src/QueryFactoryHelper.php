@@ -55,18 +55,9 @@ class QueryFactoryHelper {
         if (is_array($value) || is_object($value)) {
             $value = json_encode($value);
         }
-        switch ($type) {
-            case 'integer':
-                $raw = (int) $value;
-                break;
-            case 'float':
-                $raw = (float) $value;
-                break;
-            default:
-                $value = (string) $value;
-                $value = str_replace("'", "''", $value);
-                $raw = "'{$value}'";
-        }
+        $value = (string) $value;
+        $value = str_replace("'", "''", $value);
+        $raw = "'{$value}'";
         if ($type) {
             return "CAST($raw AS $type)";
         }
