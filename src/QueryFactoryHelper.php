@@ -51,7 +51,13 @@ class QueryFactoryHelper {
         }
         $value = (string) $value;
         $value = str_replace("'", "''", $value);
-        $raw = "'{$value}'";
+        if (is_bool($value)) {
+            $raw = $value ? 'TRUE' : 'FALSE';
+        } else if (is_numeric($value)) {
+            $raw = $value;
+        } else {
+            $raw = "'{$value}'";
+        }
         if ($type) {
             return "CAST($raw AS $type)";
         }
